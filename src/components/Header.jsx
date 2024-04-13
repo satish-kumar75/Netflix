@@ -2,8 +2,10 @@ import React from "react";
 import { ReactComponent as Logo } from "../assets/Netflix_Logo.svg";
 import { LuLanguages } from "react-icons/lu";
 import { NavLink } from "react-router-dom";
+import { useStore } from "react-redux";
 
 const Header = () => {
+  const user = useStore((store) => store.user);
   return (
     <div className="w-full px-6 py-4 absolute z-20 flex justify-between items-center">
       <Logo className="h-16" />
@@ -28,6 +30,9 @@ const Header = () => {
           Sign In
         </NavLink>
       </div>
+      {user && <div>
+        
+      </div>}
     </div>
   );
 };
