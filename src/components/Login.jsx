@@ -6,55 +6,50 @@ import { auth } from "../utils/firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
+import { useDispatch } from "react-redux";
+import { addUser } from "../utils/userSlice";
+
 const Login = () => {
   const [isSignIn, setIsSignIn] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const dispatch = useDispatch();
   const name = useRef(null);
   const email = useRef(null);
   const password = useRef(null);
 
   const handleSubmit = () => {
-    console.log(email.current.value);
-    console.log(password.current.value);
+    const emailValue = email.current.value;
+    const passwordValue = password.current.value;
 
-    const message = checkValidData(email.current.value, password.current.value);
+    const message = checkValidData(emailValue, passwordValue);
     setErrorMessage(message);
 
     if (!isSignIn) {
-      createUserWithEmailAndPassword(
-        auth,
-        email.current.value,
-        password.current.value
-      )
+      createUserWithEmailAndPassword(auth, emailValue, passwordValue)
         .then((userCredential) => {
           const user = userCredential.user;
-          console.log(user);
+          updateProfile(user, {
+            displayName: name.current.value,
+          }).then(() => {
+            const { uid, email, displayName } = auth.currentUser;
+            dispatch(addUser({ uid, email, displayName }));
+          });
         })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-        });
+        .catch((error) => {});
     } else {
-      signInWithEmailAndPassword(
-        auth,
-        email.current.value,
-        password.current.value
-      )
-        .then((userCredential) => {
-          const user = userCredential.user;
-          console.log("Login successfull");
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-        });
+      signInWithEmailAndPassword(auth, emailValue, passwordValue)
+        .then((userCredential) => {})
+        .catch((error) => {});
     }
   };
 
   const toggleSignIn = () => {
     setIsSignIn(!isSignIn);
   };
+
   return (
     <div>
       <img
@@ -68,7 +63,7 @@ const Login = () => {
         className="relative z-20 flex items-center justify-center h-svh text-white"
       >
         <div className="bg-black bg-opacity-70 p-10 w-1/4 rounded-lg transition-all">
-          <p className=" text-4xl mb-4">{isSignIn ? "Sign In" : "Sign Up"}</p>
+          <p className="text-4xl mb-4">{isSignIn ? "Sign In" : "Sign Up"}</p>
           {!isSignIn && (
             <input
               ref={name}
@@ -96,9 +91,8 @@ const Login = () => {
           >
             {isSignIn ? "Sign In" : "Sign Up"}
           </button>
-          <div className=" flex justify-between mt-2">
+          <div className="flex justify-between mt-2">
             <span className="flex items-center gap-2">
-              {" "}
               <input type="checkbox" />
               Remember me
             </span>

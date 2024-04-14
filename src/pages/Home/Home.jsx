@@ -1,13 +1,11 @@
 import React from "react";
 import background from "../../assets/background.jpg";
-import Header from "../../components/Header";
 import "./Home.scss";
 import { IoIosArrowForward } from "react-icons/io";
 
 const Home = () => {
   return (
     <div>
-      <Header />
       <img
         className="absolute h-svh w-full object-cover z-0"
         src={background}
